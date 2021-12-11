@@ -11,7 +11,6 @@ def findNext(elves, index):
             neighbour = 0
     return neighbour
 
-
 def checkEnd(elves):
     count = 0
     for i in elves:
@@ -21,15 +20,11 @@ def checkEnd(elves):
             return False
     return True
 
-
 def calculateNeighbour(index,elves):
-   # print('index, len(elves)', index,len(elves))
-  #  index = math.floor((len(elves) - zero_count) / 2) + index
     if(index > 0):
         elves_length = len(elves) - (index - 1)
     else:
         elves_length = len(elves)
-  #  print('elves_length, index', elves_length, index)
     i = (index + math.floor(elves_length / 2)) 
     if(i >= elves_length):
         i = i % (elves_length)
@@ -37,66 +32,51 @@ def calculateNeighbour(index,elves):
         return i
     else:
         i = i % elves_length
-    # if(index >= len(elves) - zero_count):
-    #     print('here')
-    #     index = index - len(elves)
         return i + index
 
-# def stealGifts(elves):
-#     for index in range(len(elves)):
-#         if(elves[index][0] == 0):
-#             continue
-#         if(index+1 == len(elves)):
-#             elves[index] = (elves[index][0] + elves[0][0], elves[index][1])
-#             elves[0] = (0, elves[0][1])
-#         else:
-#             elves[index] = (elves[index][0] + elves[index+1][0], elves[index][1])
-#             elves[index+1] = (0, elves[index+1][1])
-#     return elves
-
-def stealGiftsAcross(index,elves):
-    if(index >= len(elves)):
-        return elves
-    else:
-        neighbour = calculateNeighbour(index,elves)
-        print(index)
-        elves[index] = (elves[index][0] + elves[neighbour][0], elves[index][1])
-        elves[neighbour] = (0, elves[neighbour][1])
-
-        print('index, neighbour, elves',index, neighbour,elves)
-        # print('\n')
-
-        elves.pop(neighbour)
-        return stealGiftsAcross(index+1,elves)
-
-def stealGiftsAcross1(index,elves):
-    for index in range(len(elves[:])):
+def stealGifts(elves):
+    for index in range(len(elves)):
         if(elves[index][0] == 0):
             continue
-        neighbour = calculateNeighbour(index,elves)
-     #   print('neighbour', neighbour)
-        print(index, neighbour)
-        if(neighbour >= len(elves)):
-            return elves
-        elves[index] = (elves[index][0] + elves[neighbour][0], elves[index][1])
-        elves[neighbour] = (0, elves[neighbour][1])
-        print(index)
-      #  print('index, neighbour, elves',index, neighbour,elves)
-        #print('\n')
+        if(index+1 == len(elves)):
+            elves[index] = (elves[index][0] + elves[0][0], elves[index][1])
+            elves[0] = (0, elves[0][1])
+        else:
+            elves[index] = (elves[index][0] + elves[index+1][0], elves[index][1])
+            elves[index+1] = (0, elves[index+1][1])
     return elves
+
+def stealGiftAcross(elf_list,elf,list_length):
+    across = (elf + math.floor(list_length/2)) % list_length
+  #  print(elf, across,elf_list[across])
+    elf_list.pop(across)
+    return elf_list
+
+def stealGiftAcrossNoPop(elf_list,elf,list_length,elves,):
+    across = (elf + math.floor(list_length / 2) + elves-list_length) % elves
+   # print(elf,across,elf_list,list_length, elves)
+    elf_list[across] = 0
+    return elf_list
+
 if __name__ == '__main__':
     start = time.time()
-    elves = 3014387
-  #  elves = 5 #test
-    count = [(1,x) for x in range(elves)]
-    # while(len(count) > 1):
-    #     count = stealGifts(count)
-    #     count[:] = [x for x in count if x[0] != 0]
-    # print(count)
-    while(len(count) > 1):
-        print('count', len(count))
-        count = stealGiftsAcross1(0,count)
-        count[:] = [x for x in count if x[0] != 0]
-    print(count)        
+    length_list = 3014387
+  #  length_list = 5 #test
+    elf_list = [x+1 for x in range(length_list)]
+    elf_index = 0
+    while(length_list > 1):
+    #    print(elf_list, elf_index)
+
+        elf_list = stealGiftAcross(elf_list,elf_index, length_list)
+        length_list = length_list - 1
+
+        if(elf_index == length_list):
+            elf_index = 0
+        elif(elf_index <= (length_list/2)):
+            elf_index = elf_index + 1            
+        if(length_list % 1000 == 0):
+            print(length_list)
+    print(elf_list)
     print('runtime: %f seconds' % (time.time() - start))
-#1004799 too low for part 2, 3014364 too high
+#for part 2, if list is 10, answer = 2. if list is 9, answer is 9
+#1004799 too low for part 2, 3014364 too high, 905263 too low, 1777336 incorrect
